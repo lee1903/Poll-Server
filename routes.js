@@ -5,6 +5,11 @@ var router = express.Router();
  
 var Poll = require('./models/poll');
 var User = require('./models/user');
+
+var idArray = []
+for(var i = 0; i <= 9999; i++){
+    idArray[i] = 0
+}
  
 // Middleware for all this routers requests
 router.use(function timeLog(req, res, next) {
@@ -32,17 +37,29 @@ router.route('/polls')
     .post(function(req, res) {
         var poll = new Poll();
         // Set text and user values from the request
+    var min = 1000;
+    var max = 9999;
+    var num = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    while(idArray[num] == 1){
+        console.log('ID taken, generating new ID')
+        num = Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    idArray[num] = 1
+
     poll.title = req.body.title;
     poll.date = req.body.date;
     poll.optionsCount = req.body.optionsCount;
     poll.latitude = req.body.latitude;
     poll.longitude = req.body.longitude;
+    poll.id = num;
  
         // Save poll and check for errors
         poll.save(function(err) {
             if (err)
                 res.send(err);
-            res.json({ message: 'Poll created successfully!' });
+            res.json({ message: num });
         });
     });
 
@@ -75,7 +92,7 @@ router.route('/polls/:poll_id')
     // Delete poll with id (using a DELETE at http://localhost:8080/polls/:poll_id)
     .delete(function(req, res) {
         Poll.remove({
-            _id: req.params.message_id
+            _id: req.params.poll_id
         }, function(err, message) {
             if (err)
                 res.send(err);

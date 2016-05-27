@@ -4,9 +4,10 @@ var Schema = mongoose.Schema;
 var pollSchema = new Schema({
     title: String,
     date: String,
-    optionsCount: Number,
-    longitude: Number,
-    latitude: Number
+    optionsCount: String,
+    longitude: String,
+    latitude: String,
+    id: String
 });
  
 module.exports = mongoose.model('Poll', pollSchema);
