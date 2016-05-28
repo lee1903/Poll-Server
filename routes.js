@@ -54,6 +54,7 @@ router.route('/polls')
     poll.latitude = req.body.latitude;
     poll.longitude = req.body.longitude;
     poll.id = num;
+    poll.status = "live"
  
         // Save poll and check for errors
         poll.save(function(err) {
@@ -63,8 +64,49 @@ router.route('/polls')
         });
     });
 
+router.route('/polls/id=:id')
+    // GET poll with server created ID
+    .get(function(req, res) {
+        Poll.findOne({id : req.params.id}, function(err, poll) {
+            if (err)
+                res.send(err);
+            res.json(poll);
+        });
+    })
+
+    .put(function(req, res) {
+        Poll.findOne({id : req.params.id}, function(err, poll) {
+            if (err)
+                res.send(err);
+            // close poll
+        poll.status = "expired"
+
+        var num = Number(req.params.id)
+        idArray[num] = 0
+
+        poll.id = "0000"
+
+            poll.save(function(err) {
+                if (err)
+                    res.send(err);
+                res.json({ message: 'Poll successfully updated!' });
+            });
+ 
+        });
+    });
+
+router.route('/polls/title=:title')
+    // GET poll with server created ID
+    .get(function(req, res) {
+        Poll.findOne({title : req.params.title}, function(err, poll) {
+            if (err)
+                res.send(err);
+            res.json(poll);
+        });
+    });
+
 router.route('/polls/:poll_id')
-    // GET poll with id (using a GET at http://localhost:8080/polls/:poll_id)
+    // GET poll with mongoose id (using a GET at http://localhost:8080/polls/:poll_id)
     .get(function(req, res) {
         Poll.findById(req.params.poll_id, function(err, poll) {
             if (err)
@@ -78,8 +120,9 @@ router.route('/polls/:poll_id')
         Poll.findById(req.params.poll_id, function(err, poll) {
             if (err)
                 res.send(err);
-            // Update the poll text
-        poll.title = req.body.title;
+            // close poll
+        poll.status = "expired"
+
             poll.save(function(err) {
                 if (err)
                     res.send(err);
@@ -99,7 +142,7 @@ router.route('/polls/:poll_id')
  
             res.json({ message: 'Successfully deleted poll!' });
         });
-    });  
+    });
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -168,7 +211,7 @@ router.route('/users/:user_id')
  
             res.json({ message: 'Successfully deleted user!' });
         });
-    });  
+    });    
 
  
 module.exports = router;
