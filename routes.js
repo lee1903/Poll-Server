@@ -55,6 +55,10 @@ router.route('/polls')
     poll.longitude = req.body.longitude;
     poll.id = num;
     poll.status = "live"
+
+    for(var i = 0; i < req.body.optionsCount; i++){
+        poll.stats[i] = []
+    }
  
         // Save poll and check for errors
         poll.save(function(err) {
@@ -79,12 +83,21 @@ router.route('/polls/id=:id')
             if (err)
                 res.send(err);
             // close poll
-        poll.status = "expired"
 
-        var num = Number(req.params.id)
-        idArray[num] = 0
+        if(req.body.status != null){
+            poll.status = "expired"
 
-        poll.id = "0000"
+            var num = Number(req.body.id)
+            idArray[num] = 0
+
+            poll.id = "0000"
+        }
+
+        if(req.body.response != null && req.body.user != null){
+            var i = Number(req.body.response)
+            poll.stats[i].push(req.body.user)
+            poll.markModified('stats')
+        }
 
             poll.save(function(err) {
                 if (err)

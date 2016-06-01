@@ -8,7 +8,8 @@ var pollSchema = new Schema({
     longitude: String,
     latitude: String,
     id: String,
-    status: String
+    status: String,
+    stats: Array
 });
  
 module.exports = mongoose.model('Poll', pollSchema);
