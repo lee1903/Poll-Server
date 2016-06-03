@@ -53,6 +53,7 @@ router.route('/polls')
     poll.optionsCount = req.body.optionsCount;
     poll.latitude = req.body.latitude;
     poll.longitude = req.body.longitude;
+    poll.author = req.body.author;
     poll.id = num;
     poll.status = "live"
 
@@ -118,6 +119,17 @@ router.route('/polls/title=:title')
         });
     });
 
+router.route('/polls/author=:author')
+    // GET poll with server created ID
+    .get(function(req, res) {
+        Poll.find({author : req.params.author}, function(err, poll) {
+            if (err)
+                res.send(err);
+            res.json(poll);
+        });
+    });
+
+
 router.route('/polls/:poll_id')
     // GET poll with mongoose id (using a GET at http://localhost:8080/polls/:poll_id)
     .get(function(req, res) {
@@ -176,15 +188,19 @@ router.route('/users')
     .post(function(req, res) {
         var user = new User();
         // Set text and user values from the request
+        var cc = require('coupon-code');
+
+        var id = cc.generate();
+
     user.name = req.body.name;
     user.email = req.body.email;
-    user.id = req.body.id;
+    user.id = id;
  
         // Save user and check for errors
         user.save(function(err) {
             if (err)
                 res.send(err);
-            res.json({ message: 'User created successfully!' });
+            res.json({ id: user.id});
         });
     });
 
