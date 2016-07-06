@@ -65,7 +65,7 @@ router.route('/polls')
         poll.save(function(err) {
             if (err)
                 res.send(err);
-            res.json({ message: num });
+            res.json({ id: num, server_id: poll._id });
         });
     });
 
